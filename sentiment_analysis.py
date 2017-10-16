@@ -94,7 +94,7 @@ def preprocess_trigram_u_b():
 
 def learn_model(data,target):
     # preparing data for split validation. 60% training, 40% test
-    data_train,data_test,target_train,target_test = cross_validation.train_test_split(data,target,test_size=0.20,random_state=43)
+    data_train,data_test,target_train,target_test = cross_validation.train_test_split(data,target,test_size=0.50,random_state=43)
     classifier = BernoulliNB().fit(data_train,target_train)
     predicted = classifier.predict(data_test)
     print np.shape(predicted)
@@ -106,7 +106,7 @@ def learn_model(data,target):
 
 def learn_model_svm(data,target):
     # preparing data for split validation. 60% training, 40% test
-    data_train,data_test,target_train,target_test = cross_validation.train_test_split(data,target,test_size=0.20,random_state=43)
+    data_train,data_test,target_train,target_test = cross_validation.train_test_split(data,target,test_size=0.50,random_state=43)
     # Perform classification with SVM, kernel=linear
     classifier_linear = svm.LinearSVC()
     #classifier_linear = svm.SVC(kernel='linear')
@@ -124,7 +124,7 @@ def learn_model_svm(data,target):
 
 def learn_model_logistic(data,target):
     # preparing data for split validation. 80% training, 20% test
-    data_train,data_test,target_train,target_test = cross_validation.train_test_split(data,target,test_size=0.20,random_state=43)
+    data_train,data_test,target_train,target_test = cross_validation.train_test_split(data,target,test_size=0.50,random_state=43)
     # Perform classification with SVM, kernel=linear
     #classifier_linear = svm.LinearSVC()
     classifier_linear = LogisticRegression()
@@ -152,9 +152,9 @@ def apply_model(tf_idf,target,data):
     svm = learn_model_svm(tf_idf,target)
     print "Logistic Regression"
     lr = learn_model_logistic(tf_idf,target)
-    data_train,data_test,target_train,target_test = cross_validation.train_test_split(data,target,test_size=0.20,random_state=43)
+    data_train,data_test,target_train,target_test = cross_validation.train_test_split(data,target,test_size=0.50,random_state=43)
     final_pred = []
-    for i in range(0,7787):
+    for i in range(0,19466):
         c1 = 0
         if nb[i] == 'happy':
             c1 = c1 + 1
