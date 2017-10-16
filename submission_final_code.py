@@ -6,6 +6,8 @@ from sklearn.metrics import classification_report
 import numpy as np
 from sklearn.metrics import accuracy_score
 from sklearn.linear_model import LogisticRegression
+from sklearn.naive_bayes import BernoulliNB
+from sklearn import svm
 
 
 def load_file_train():
@@ -58,19 +60,72 @@ def evaluate_model(target_true,target_predicted):
     
 
 
+def learn_model_nb(data,target,data_test,test_ids):
+    # preparing data for split validation. 60% training, 40% test
+    #data_train,data_test,target_train,target_test = cross_validation.train_test_split(data,target,test_size=0.50,random_state=43)
+    classifier = BernoulliNB().fit(data,target)
+    predicted = classifier.predict(data_test)
+    print np.shape(predicted)
+    #print target_test[0:10]
+    #evaluate_model(target_test,predicted)
+    #NB.append(evaluate_model(target_test,predicted)*100)
+    return predicted
+
+
+def learn_model_svm(data,target,data_test,test_ids):
+    # preparing data for split validation. 60% training, 40% test
+    #data_train,data_test,target_train,target_test = cross_validation.train_test_split(data,target,test_size=0.50,random_state=43)
+    # Perform classification with SVM, kernel=linear
+    classifier_linear = svm.LinearSVC()
+    #classifier_linear = svm.SVC(kernel='linear')
+    #classifier_linear = svm.SVC()
+    #t0 = time.time()
+    classifier_linear.fit(data,target)
+    #t1 = time.time()
+    predicted = classifier_linear.predict(data_test)
+    #print np.shape(predicted)
+    #print target_test[0:10]
+    #t2 = time.time()
+    #evaluate_model(target_test,predicted)
+    #SVM.append(evaluate_model(target_test,predicted)*100)
+    return predicted
+
+    
+
+
 def learn_model_logistic(data,target,data_test,test_ids):
     #-----LogisticRegression-----
     classifier = LogisticRegression()
     classifier.fit(data,target)
     predicted = classifier.predict(data_test)
-    n = len(test_ids)
-    print "User_ID, Is_Response"
-    for i in range(0,n):
-        print test_ids[i]+","+predicted[i]
-        
+    return predicted
+            
 
 def apply_model(tf_idf,target,tfidf_test,test_ids):
-    learn_model_logistic(tf_idf,target,tfidf_test,test_ids)
+    nb = learn_model_nb(tf_idf,target,tfidf_test,test_ids)
+    svm  = learn_model_svm(tf_idf,target,tfidf_test,test_ids)
+    lr = learn_model_logistic(tf_idf,target,tfidf_test,test_ids)
+    n = len(test_ids)
+    final_pred = []
+    for i in range(0,n):
+        c1 = 0
+        if nb[i] == 'happy':
+            c1 = c1 + 1
+        if lr[i] == 'happy':
+            c1 = c1 + 1
+        if svm[i] == 'happy':
+            c1 = c1 + 1
+        #print i
+        if c1 == 3 or c1 == 2:
+            final_pred.append('happy')
+        else:
+            final_pred.append('not happy')
+
+    
+    print "User_ID, Is_Response"
+    for i in range(0,n):
+        print test_ids[i]+","+final_pred[i]
+
 
 def main():
     data,target = load_file_train()
